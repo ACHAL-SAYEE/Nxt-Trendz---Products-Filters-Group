@@ -40,13 +40,12 @@ const FiltersGroup = props => {
       <h1>Category</h1>
       <div>
         {categoryOptions.map(category => (
-          <p className="category" key={category.categoryId}>
-            <button
-              type="button"
-              onClick={() => onClickupdateCategory(category.categoryId)}
-            >
-              {category.name}
-            </button>
+          <p
+            className="category"
+            key={category.categoryId}
+            onClick={() => onClickupdateCategory(category.categoryId)}
+          >
+            {category.name}
           </p>
         ))}
       </div>
@@ -58,7 +57,11 @@ const FiltersGroup = props => {
               type="button"
               onClick={() => onClickupdateRating(rating.ratingId)}
             >
-              <img src={rating.imageUrl} className="img" alt="" />
+              <img
+                src={rating.imageUrl}
+                className="img"
+                alt={`rating ${rating.ratingId}`}
+              />
 
               <p className="rating-heading">& up</p>
             </button>

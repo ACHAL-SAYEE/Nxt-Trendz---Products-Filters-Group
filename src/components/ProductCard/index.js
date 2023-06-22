@@ -12,6 +12,7 @@ const ProductCard = props => {
       <div className="product-details">
         <p className="price">Rs {price}/-</p>
         <div className="rating-container">
+          {/* {console.log(rating)} */}
           <p className="rating">{rating}</p>
           <img
             src="https://assets.ccbp.in/frontend/react-js/star-img.png"

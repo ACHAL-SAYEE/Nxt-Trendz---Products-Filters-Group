@@ -64,15 +64,20 @@ const ratingsList = [
       'https://assets.ccbp.in/frontend/react-js/rating-one-star-img.png',
   },
 ]
-
+const apiStatusObj = {
+  failure: 'FAILURE',
+  success: 'SUCCESS',
+  loading: 'LOADING',
+}
 class AllProductsSection extends Component {
   state = {
     productsList: [],
-    isLoading: false,
+    // isLoading: false,
     activeOptionId: sortbyOptions[0].optionId,
     searchValue: '',
     category: '',
     rating: '',
+    apiStatus: 'INITIAL',
   }
 
   componentDidMount() {
@@ -81,23 +86,21 @@ class AllProductsSection extends Component {
 
   getProducts = async () => {
     this.setState({
-      isLoading: true,
+      apiStatus: apiStatusObj.loading,
     })
     const jwtToken = Cookies.get('jwt_token')
-
-    // TODO: Update the code to get products with filters applied
-
     const {activeOptionId, category, searchValue, rating} = this.state
     let apiUrl = null
-    if (category === '' && rating === '') {
-      apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}`
-    } else if (category === '') {
-      apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}`
-    } else if (rating === '') {
-      apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&category=${category}`
-    } else {
-      apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}&category=${category}`
-    }
+    // if (category === '' && rating === '') {
+    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}`
+    // } else if (category === '') {
+    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}`
+    // } else if (rating === '') {
+    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&category=${category}`
+    // } else {
+    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}&category=${category}`
+    // }
+    apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}&category=${category}`
     console.log(apiUrl)
     // apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${1}&category=${category}`
     const options = {
@@ -121,7 +124,12 @@ class AllProductsSection extends Component {
       }))
       this.setState({
         productsList: updatedData,
-        isLoading: false,
+        apiStatus: apiStatusObj.success,
+      })
+    }
+    if (response.status === 401) {
+      this.setState({
+        apiStatus: apiStatusObj.failure,
       })
     }
   }
@@ -133,7 +141,9 @@ class AllProductsSection extends Component {
   renderProductsList = () => {
     const {productsList, activeOptionId} = this.state
 
-    // TODO: Add No Products View
+    if (productsList.length === 0) {
+      this.renderNoProductsView()
+    }
     return (
       <div className="all-products-container">
         <ProductsHeader
@@ -190,10 +200,44 @@ class AllProductsSection extends Component {
   }
 
   // TODO: Add failure view
+  renderFailureView = () => (
+    <div>
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-products-error-view.png"
+        alt="products failure"
+      />
+      <h1>Oops!Something Went Wrong</h1>
+      <p>We are having some trouble processing your request.Please try again</p>
+    </div>
+  )
+
+  renderNoProductsView = () => (
+    <div>
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-no-products-view.png"
+        alt="no products"
+      />
+      <h1>No products Found</h1>
+      <p>We could not find any products.Try other filters.</p>
+    </div>
+  )
 
   render() {
-    const {isLoading, searchValue} = this.state
-
+    const {apiStatus, searchValue} = this.state
+    let renderContent = null
+    switch (apiStatus) {
+      case apiStatusObj.failure:
+        renderContent = this.renderFailureView()
+        break
+      case apiStatusObj.loading:
+        renderContent = this.renderLoader()
+        break
+      case apiStatusObj.success:
+        renderContent = this.renderProductsList()
+        break
+      default:
+        return null
+    }
     return (
       <div className="all-products-section">
         {/* TODO: Update the below element */}
@@ -208,8 +252,7 @@ class AllProductsSection extends Component {
           searchValue={searchValue}
           searchproduct={this.searchproducts}
         />
-
-        {isLoading ? this.renderLoader() : this.renderProductsList()}
+        {renderContent}
       </div>
     )
   }
