@@ -91,18 +91,8 @@ class AllProductsSection extends Component {
     const jwtToken = Cookies.get('jwt_token')
     const {activeOptionId, category, searchValue, rating} = this.state
     let apiUrl = null
-    // if (category === '' && rating === '') {
-    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}`
-    // } else if (category === '') {
-    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}`
-    // } else if (rating === '') {
-    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&category=${category}`
-    // } else {
-    //   apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}&category=${category}`
-    // }
     apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${rating}&category=${category}`
     console.log(apiUrl)
-    // apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchValue}&rating=${1}&category=${category}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -126,8 +116,7 @@ class AllProductsSection extends Component {
         productsList: updatedData,
         apiStatus: apiStatusObj.success,
       })
-    }
-    if (response.status === 401) {
+    } else {
       this.setState({
         apiStatus: apiStatusObj.failure,
       })
@@ -140,12 +129,14 @@ class AllProductsSection extends Component {
 
   renderProductsList = () => {
     const {productsList, activeOptionId} = this.state
+    console.log(productsList)
 
     if (productsList.length === 0) {
-      this.renderNoProductsView()
+      return this.renderNoProductsView()
     }
     return (
       <div className="all-products-container">
+        {console.log('fuck2')}
         <ProductsHeader
           activeOptionId={activeOptionId}
           sortbyOptions={sortbyOptions}
@@ -213,6 +204,7 @@ class AllProductsSection extends Component {
 
   renderNoProductsView = () => (
     <div>
+      {console.log('fuck')}
       <img
         src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-no-products-view.png"
         alt="no products"

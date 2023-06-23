@@ -10,11 +10,18 @@ const FiltersGroup = props => {
     updateRating,
     searchValue,
     searchproducts,
+    getProducts,
   } = props
   //   const {name, categoryId} = categoryOptions
   //   const {ratingId, imageUrl} = ratingsList
   const onClickresetFilters = () => {
     resetFilters()
+  }
+
+  const Onsearchproducts = event => {
+    if (event.key === 'Enter') {
+      getProducts()
+    }
   }
 
   const onClickupdateCategory = categoryId => {
@@ -31,7 +38,7 @@ const FiltersGroup = props => {
         <input
           type="search"
           onChange={updateSearchVal}
-          onKeyDown={searchproducts}
+          onKeyDown={Onsearchproducts}
           value={searchValue}
         />
         <img src="" alt="" />
